@@ -32,7 +32,7 @@ def registrar():
         nome = request.form.get("nome")
         email = request.form.get("email")
         data_de_nascimento = request.form.get("data_nascimento")
-        senha = request.form.get("password")
+        senha = request.form.get("senha")
         
 
         erros = []
