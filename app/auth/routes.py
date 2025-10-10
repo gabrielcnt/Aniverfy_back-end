@@ -13,9 +13,9 @@ def registrar():
     Registrar um novo usuário no sistema.
 
     Espera receber:
-    - name: Nome completo do usuário
+    - nome: Nome completo do usuário
     - email: Email válido e único
-    - password: Senha que atende aos requisitos mínimos
+    - senha: Senha que atende aos requisitos mínimos
     - repetir_senha: Confirmação da senha
     - data_nascimento: Data no formato DD-MM-YYYY
 
@@ -29,26 +29,26 @@ def registrar():
         
         current_app.logger.info(f"Dados recebidos: {request.form}")
 
-        name = request.form.get("name")
+        nome = request.form.get("nome")
         email = request.form.get("email")
         data_de_nascimento = request.form.get("data_nascimento")
-        password = request.form.get("password")
-        repeat_password = request.form.get("repeat_password")
+        senha = request.form.get("senha")
+        repetir_Senha = request.form.get("repetir_senha")
 
         
 
         erros = []
 
-        nome_erros = validar_nome(name) or []
+        nome_erros = validar_nome(nome) or []
         email_erros = validar_email(email) or []
         data_erros = validar_data_nascimento(data_de_nascimento) or []
-        senha_erros = validar_senha(password) or []
+        senha_erros = validar_senha(senha) or []
 
         erros.extend(nome_erros)
         erros.extend(email_erros)
         erros.extend(data_erros)
         
-        if password != repeat_password:
+        if senha != repetir_Senha:
             erros.append('A senha e a confirmação devem ser idênticas')
             
         erros.extend(senha_erros)
@@ -61,11 +61,11 @@ def registrar():
         if erros:
             return jsonify({'erros': erros}), 400
         
-        password_hash = generate_password_hash(password)
+        password_hash = generate_password_hash(senha)
         data_de_nascimento_obj = datetime.strptime(data_de_nascimento, '%d-%m-%Y').date()
         try:
             new_user = Usuario(
-            name=name,
+            name=nome,
             email=email, 
             password_hash=password_hash,
             data_nascimento=data_de_nascimento_obj
@@ -76,7 +76,7 @@ def registrar():
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Erro ao salvar usuário. Detalhes: {str(e)}')
-            current_app.logger.error(f'Dados recebidos: {name}, {email}, {data_de_nascimento}')
+            current_app.logger.error(f'Dados recebidos: {nome}, {email}, {data_de_nascimento}')
             return jsonify({'erros': ['Erro ao salvar usuário']}), 500
 
         return jsonify({'mensagem': 'Usuario registrado com sucesso'}), 201
