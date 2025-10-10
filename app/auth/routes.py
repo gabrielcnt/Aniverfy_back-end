@@ -32,9 +32,7 @@ def registrar():
         nome = request.form.get("nome")
         email = request.form.get("email")
         data_de_nascimento = request.form.get("data_nascimento")
-        senha = request.form.get("senha")
-        repetir_Senha = request.form.get("repetir_senha")
-
+        senha = request.form.get("password")
         
 
         erros = []
@@ -48,8 +46,6 @@ def registrar():
         erros.extend(email_erros)
         erros.extend(data_erros)
         
-        if senha != repetir_Senha:
-            erros.append('A senha e a confirmação devem ser idênticas')
             
         erros.extend(senha_erros)
 
