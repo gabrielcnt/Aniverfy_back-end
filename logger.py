@@ -1,44 +1,31 @@
 import logging
-from logging.handlers import RotatingFileHandler
 import os
 
-# caminho da pasta de logs
-LOG_DIR = "logs"
-LOG_FILE = os.path.join(LOG_DIR, "app.log")
+# cria a pasta de logs caso não exista
+os.makedirs('logs', exist_ok=True)
 
-def setup_logger(name: str = "app"):
+def criar_logger(nome_logger='app', nivel=logging.DEBUG):
+    logger = logging.getLogger(nome_logger)
+    logger.setLevel(nivel)
 
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
 
-    # criar logger
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    # Evita duplicar handlers 
+    if not logger.handlers:
+        # handler para arquivo
+        file_handler = logging.FileHandler('logs/logs.log', mode='a')
+        file_handler.setLevel(logging.WARNING)
 
-    # Evita duplicar mensagens se o logger já tiver handlers
+        # handler para console
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.WARNING)
 
-    if logger.hasHandlers:
-        return logger
-    
-    # definir fotmato do log
-    formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-    )
+        # formato do log
+        formato = logging.Formatter('%(levelname)s | %(asctime)s | %(name)s | %(message)s')
+        file_handler.setFormatter(formato)
+        console_handler.setFormatter(formato)
 
-    # Handler para o console
-
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-
-    # Handler para o arquivo (com rotação)
-
-    file_handler = RotatingFileHandler(
-        LOG_FILE, maxBytes=100_00, backupCount=3, encoding="utf-8"
-    )
-    file_handler.setFormatter(formatter)
-
-    # Adiciona os handlers ao logger
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
+        # adiciona o formato ao log
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
     return logger
